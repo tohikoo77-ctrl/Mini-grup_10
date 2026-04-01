@@ -4,7 +4,7 @@ from core.views.recent_verify import ResentVerifyCodeView
 
 
 urlpatterns = [
-      path("logout", LogoutView.as_view()),
+      path("logout/", LogoutView.as_view()),
       path('login/', LoginView.as_view()),
       path('register/', RegisterView.as_view()),
       path("resend-code/", ResentVerifyCodeView.as_view()),
