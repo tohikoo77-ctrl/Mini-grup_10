@@ -98,6 +98,40 @@ class RegisterView(APIView):
             "access_token": token.key
         }, status=201)
 
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        if not email or not password:
+            raise AuthenticationFailed("email va password kirlishi shart")
+
+        user = User.objects.filter(email=email).first()
+        if not user:
+            raise AuthenticationFailed("email topilmadi")
+
+        if not user.is_active:
+            return Response({
+                "error": "user is baned"
+            }, status=401)
+
+        if not user.check_password(str(password)):
+            raise AuthenticationFailed("password noto'g'ri")
+
+        return Response({
+            "email": user.email,
+            "message": "successfull you are login"
+        })
+
+class LogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({
+            "message": "successfully logout"
+        }, status=200)
+
 
 
 
