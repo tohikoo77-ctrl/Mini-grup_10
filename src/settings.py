@@ -20,12 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&iakrhsw*(bpglwe8g#xgq_d5ju!zh1hjjcpr(z26q1i2($j#q'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 
 AUTH_USER_MODEL = 'core.User'
 # Application definition
@@ -38,11 +35,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',  # Добавляем сюда
     'rest_framework.authtoken',
     'core',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Должно быть как можно выше!
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -135,4 +134,29 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'programmer220212@gmail.com'
 EMAIL_HOST_PASSWORD = 'gaqg uubw veqh ecnh'
+
+import environ
+import os
+from pathlib import Path
+
+# Определяем базовую директорию проекта
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Инициализируем environ
+env = environ.Env(
+    # Указываем типы данных по умолчанию
+    DEBUG=(bool, False)
+)
+
+# Читаем файл .env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Теперь используем переменные
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+
+# Специфические настройки для фронтенда
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:8000')
+STRIPE_KEY = env('STRIPE_PUBLIC_KEY', default='')
 
